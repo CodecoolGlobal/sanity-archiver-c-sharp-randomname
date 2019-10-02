@@ -18,7 +18,6 @@
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += Window_Loaded;
             SelectedImagePath = string.Empty;
         }
 
@@ -57,17 +56,22 @@
                         item.Items.Add(subitem);
                     }
                 }
-                catch (Exception) { }
+                catch (Exception)
+                {
+                }
             }
         }
 
         private void FoldersItem_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeView tree = (TreeView)sender;
-            TreeViewItem temp = ((TreeViewItem)tree.SelectedItem);
+            TreeViewItem temp = (TreeViewItem)tree.SelectedItem;
 
             if (temp == null)
+            {
                 return;
+            }
+
             SelectedImagePath = string.Empty;
             string temp1 = string.Empty;
             string temp2 = string.Empty;
@@ -85,16 +89,10 @@
                     break;
                 }
 
-                temp = ((TreeViewItem)temp.Parent);
+                temp = (TreeViewItem)temp.Parent;
                 temp2 = @"\";
             }
 
-            /**
-            ListBoxItem itm = new ListBoxItem();
-            itm.Content = SelectedImagePath;
-
-            listBox.Items.Add(itm);
-            **/
             listBox.Items.Clear();
 
             string[] fileEntries = Directory.GetFileSystemEntries(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly);
@@ -102,7 +100,15 @@
             foreach (string fileName in fileEntries)
             {
                 ListBoxItem itm = new ListBoxItem();
-                itm.Content = Path.GetFileName(fileName);
+                StackPanel panel = new StackPanel();
+                panel.Orientation = Orientation.Horizontal;
+                TextBlock textBlock = new TextBlock();
+                textBlock.Text = Path.GetFileName(fileName);
+                textBlock.Width = 300;
+                CheckBox checkBox = new CheckBox();
+                panel.Children.Add(textBlock);
+                panel.Children.Add(checkBox);
+                itm.Content = panel;
                 listBox.Items.Add(itm);
             }
         }

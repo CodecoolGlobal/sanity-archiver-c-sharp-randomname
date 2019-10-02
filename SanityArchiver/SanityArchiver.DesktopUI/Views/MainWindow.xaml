@@ -12,8 +12,15 @@
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
-        <TreeView x:Name="FoldersItem" SelectedItemChanged="FoldersItem_SelectedItemChanged" Width="Auto" Background="#FFFFFFFF" BorderBrush="#FFFFFFFF" Foreground="#FFFFFFFF" Grid.ColumnSpan="1">
-        </TreeView>
+
+            <TreeView x:Name="FoldersItem"
+                      SelectedItemChanged="FoldersItem_SelectedItemChanged"
+                      Width="Auto"
+                      Background="#FFFFFFFF"
+                      BorderBrush="#FFFFFFFF"
+                      Foreground="#FFFFFFFF"
+                      Grid.ColumnSpan="1">
+            </TreeView>
         <ListBox x:Name="listBox"  Grid.Column="1" />
 
     </Grid>
