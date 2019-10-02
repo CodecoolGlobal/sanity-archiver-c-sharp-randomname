@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
 
@@ -43,9 +44,12 @@
             if (item.Items.Count == 1 && item.Items[0] == _dummyNode)
             {
                 item.Items.Clear();
+                var folders = Directory.GetDirectories(item.Tag.ToString())
+                    .Where(d => !new DirectoryInfo(d).Attributes.HasFlag(FileAttributes.Hidden | FileAttributes.System));
+
                 try
                 {
-                    foreach (string s in Directory.GetDirectories(item.Tag.ToString()))
+                    foreach (string s in folders)
                     {
                         TreeViewItem subitem = new TreeViewItem();
                         subitem.Header = s.Substring(s.LastIndexOf("\\") + 1);
@@ -95,8 +99,8 @@
 
             listBox.Items.Clear();
 
-            string[] fileEntries = Directory.GetFileSystemEntries(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly);
-
+            var fileEntries = Directory.GetFileSystemEntries(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly)
+                .Where(f => !new FileInfo(f).Attributes.HasFlag(FileAttributes.Hidden | FileAttributes.System));
             foreach (string fileName in fileEntries)
             {
                 ListBoxItem itm = new ListBoxItem();
