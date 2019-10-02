@@ -101,7 +101,7 @@
 
             var fileEntries = Directory.GetFileSystemEntries(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly)
                 .Where(f => !new FileInfo(f).Attributes.HasFlag(FileAttributes.Hidden | FileAttributes.System));
-            foreach (string fileName in fileEntries)
+            foreach (var fileName in fileEntries)
             {
                 ListBoxItem itm = new ListBoxItem();
                 StackPanel panel = new StackPanel();
