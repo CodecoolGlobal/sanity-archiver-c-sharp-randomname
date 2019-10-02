@@ -18,7 +18,6 @@
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += Window_Loaded;
             SelectedImagePath = "";
         }
 
@@ -57,7 +56,7 @@
                         item.Items.Add(subitem);
                     }
                 }
-                catch (Exception) {}
+                catch (Exception) { }
             }
         }
 
@@ -102,6 +101,7 @@
                 ListBoxItem itm = new ListBoxItem();
                 itm.Content = Path.GetFileName(fileName);
                 listBox.Items.Add(itm);
+                listBox.Items.Add(new Separator()); 
             }
     
         }
