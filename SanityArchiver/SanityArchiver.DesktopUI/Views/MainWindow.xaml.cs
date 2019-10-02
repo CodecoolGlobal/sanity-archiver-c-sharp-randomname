@@ -18,7 +18,11 @@
         public MainWindow()
         {
             InitializeComponent();
+            Loaded += Window_Loaded;
+            SelectedImagePath = "";
         }
+
+        public string SelectedImagePath { get; set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -56,5 +60,51 @@
                 catch (Exception) { }
             }
         }
+
+        private void foldersItem_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            TreeView tree = (TreeView)sender;
+            TreeViewItem temp = ((TreeViewItem)tree.SelectedItem);
+
+            if (temp == null)
+                return;
+            SelectedImagePath = "";
+            string temp1 = "";
+            string temp2 = "";
+            while (true)
+            {
+                temp1 = temp.Header.ToString();
+                if (temp1.Contains(@"\"))
+                {
+                    temp2 = "";
+                }
+                SelectedImagePath = (temp1 + temp2 +  SelectedImagePath).ToString();
+                if (temp.Parent.GetType().Equals(typeof(TreeView)))
+                {
+                    break;
+                }
+                temp = ((TreeViewItem)temp.Parent);
+                temp2 = @"\";
+            }
+            /**
+            ListBoxItem itm = new ListBoxItem();
+            itm.Content = SelectedImagePath;
+
+            listBox.Items.Add(itm);
+            **/
+            listBox.Items.Clear();
+
+            string[] fileEntries = Directory.GetFileSystemEntries(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly);
+           
+      
+            foreach (string fileName in fileEntries)
+            {
+                ListBoxItem itm = new ListBoxItem();
+                itm.Content = Path.GetFileName(fileName);
+                listBox.Items.Add(itm);
+            }
+    
+        }
+
     }
 }
