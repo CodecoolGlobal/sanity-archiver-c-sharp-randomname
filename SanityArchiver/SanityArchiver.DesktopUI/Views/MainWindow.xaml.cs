@@ -19,10 +19,10 @@
         {
             InitializeComponent();
             Loaded += Window_Loaded;
-            SelectedImagePath = "";
+            SelectedImagePath = string.Empty;
         }
 
-        public string SelectedImagePath { get; set; }
+        private string SelectedImagePath { get; set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -34,7 +34,7 @@
                 item.FontWeight = FontWeights.Normal;
                 item.Items.Add(_dummyNode);
                 item.Expanded += new RoutedEventHandler(Folder_Expanded);
-                foldersItem.Items.Add(item);
+                FoldersItem.Items.Add(item);
             }
         }
 
@@ -61,31 +61,34 @@
             }
         }
 
-        private void foldersItem_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void FoldersItem_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeView tree = (TreeView)sender;
             TreeViewItem temp = ((TreeViewItem)tree.SelectedItem);
 
             if (temp == null)
                 return;
-            SelectedImagePath = "";
-            string temp1 = "";
-            string temp2 = "";
+            SelectedImagePath = string.Empty;
+            string temp1 = string.Empty;
+            string temp2 = string.Empty;
             while (true)
             {
                 temp1 = temp.Header.ToString();
                 if (temp1.Contains(@"\"))
                 {
-                    temp2 = "";
+                    temp2 = string.Empty;
                 }
-                SelectedImagePath = (temp1 + temp2 +  SelectedImagePath).ToString();
+
+                SelectedImagePath = (temp1 + temp2 + SelectedImagePath).ToString();
                 if (temp.Parent.GetType().Equals(typeof(TreeView)))
                 {
                     break;
                 }
+
                 temp = ((TreeViewItem)temp.Parent);
                 temp2 = @"\";
             }
+
             /**
             ListBoxItem itm = new ListBoxItem();
             itm.Content = SelectedImagePath;
@@ -95,16 +98,13 @@
             listBox.Items.Clear();
 
             string[] fileEntries = Directory.GetFileSystemEntries(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly);
-           
-      
+
             foreach (string fileName in fileEntries)
             {
                 ListBoxItem itm = new ListBoxItem();
                 itm.Content = Path.GetFileName(fileName);
                 listBox.Items.Add(itm);
             }
-    
         }
-
     }
 }
