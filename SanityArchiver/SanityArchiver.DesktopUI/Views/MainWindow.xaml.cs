@@ -10,7 +10,7 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-        private object dummyNode = null;
+        private object _dummyNode = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -28,16 +28,16 @@
                 item.Header = s;
                 item.Tag = s;
                 item.FontWeight = FontWeights.Normal;
-                item.Items.Add(dummyNode);
-                item.Expanded += new RoutedEventHandler(folder_Expanded);
+                item.Items.Add(_dummyNode);
+                item.Expanded += new RoutedEventHandler(Folder_Expanded);
                 foldersItem.Items.Add(item);
             }
         }
 
-        void folder_Expanded(object sender, RoutedEventArgs e)
+        private void Folder_Expanded(object sender, RoutedEventArgs e)
         {
             TreeViewItem item = (TreeViewItem)sender;
-            if (item.Items.Count == 1 && item.Items[0] == dummyNode)
+            if (item.Items.Count == 1 && item.Items[0] == _dummyNode)
             {
                 item.Items.Clear();
                 try
@@ -48,12 +48,12 @@
                         subitem.Header = s.Substring(s.LastIndexOf("\\") + 1);
                         subitem.Tag = s;
                         subitem.FontWeight = FontWeights.Normal;
-                        subitem.Items.Add(dummyNode);
-                        subitem.Expanded += new RoutedEventHandler(folder_Expanded);
+                        subitem.Items.Add(_dummyNode);
+                        subitem.Expanded += new RoutedEventHandler(Folder_Expanded);
                         item.Items.Add(subitem);
                     }
                 }
-                catch (Exception) {}
+                catch (Exception) { }
             }
         }
     }
