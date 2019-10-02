@@ -101,7 +101,6 @@
                 ListBoxItem itm = new ListBoxItem();
                 itm.Content = Path.GetFileName(fileName);
                 listBox.Items.Add(itm);
-                listBox.Items.Add(new Separator()); 
             }
     
         }
