@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
 
@@ -18,10 +19,10 @@
         public MainWindow()
         {
             InitializeComponent();
-            SelectedImagePath = string.Empty;
+            SelectedItemPath = string.Empty;
         }
 
-        private string SelectedImagePath { get; set; }
+        private string SelectedItemPath { get; set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -48,13 +49,16 @@
             if (item.Items.Count == 1 && item.Items[0] == _dummyNode)
             {
                 item.Items.Clear();
+                var folders = Directory.GetDirectories(item.Tag.ToString())
+                    .Where(d => !new DirectoryInfo(d).Attributes.HasFlag(FileAttributes.Hidden | FileAttributes.System));
+
                 try
                 {
-                    foreach (string directoryName in Directory.GetDirectories(item.Tag.ToString()))
+                    foreach (string folder in folders)
                     {
                         TreeViewItem subitem = new TreeViewItem();
-                        subitem.Header = directoryName.Substring(directoryName.LastIndexOf("\\") + 1);
-                        subitem.Tag = directoryName;
+                        subitem.Header = folder.Substring(folder.LastIndexOf("\\") + 1);
+                        subitem.Tag = folder;
                         subitem.FontWeight = FontWeights.Normal;
                         subitem.Items.Add(_dummyNode);
                         subitem.Expanded += new RoutedEventHandler(Folder_Expanded);
@@ -77,7 +81,7 @@
                 return;
             }
 
-            SelectedImagePath = string.Empty;
+            SelectedItemPath = string.Empty;
             string temp2 = string.Empty;
             while (true)
             {
@@ -87,7 +91,7 @@
                     temp2 = string.Empty;
                 }
 
-                SelectedImagePath = (temp1 + temp2 + SelectedImagePath).ToString();
+                SelectedItemPath = (temp1 + temp2 + SelectedItemPath).ToString();
                 if (temp.Parent.GetType().Equals(typeof(TreeView)))
                 {
                     break;
@@ -102,46 +106,113 @@
             GetFiles();
         }
 
-        private string[] GetDirectories()
+        private void GetDirectories()
         {
-            string[] fileEntries = Directory.GetDirectories(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly);
-
-            foreach (string fileName in fileEntries)
+            DirectoryInfo directoryInfo = new DirectoryInfo(SelectedItemPath);
+            DirectoryInfo[] directoryEntries = directoryInfo.GetDirectories("*.*", SearchOption.TopDirectoryOnly);
+            foreach (DirectoryInfo directory in directoryEntries)
             {
-                CreateListBoxItem(fileName, "dir");
+                if (!directory.Attributes.HasFlag(FileAttributes.Hidden) || !directory.Attributes.HasFlag(FileAttributes.System))
+                {
+                    CreateListBoxItem(directory);
+                }
             }
-
-            return fileEntries;
         }
 
-        private string[] GetFiles()
+        private void GetFiles()
         {
-            string[] fileEntries = Directory.GetFiles(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly);
-            foreach (string fileName in fileEntries)
+            DirectoryInfo directoryInfo = new DirectoryInfo(SelectedItemPath);
+            FileInfo[] fileEntries = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly);
+            foreach (FileInfo file in fileEntries)
             {
-                CreateListBoxItem(fileName, "file");
+                if (!file.Attributes.HasFlag(FileAttributes.Hidden) || !file.Attributes.HasFlag(FileAttributes.System))
+                {
+                    CreateListBoxItem(file);
+                }
             }
-
-            return fileEntries;
         }
 
-        private void CreateListBoxItem(string fileName, string type)
+        private void CreateListBoxItem(FileInfo file)
         {
-            ListBoxItem itm = new ListBoxItem();
-            StackPanel panel = new StackPanel();
-            itm.Content = panel;
+            ListBoxItem item;
+            StackPanel panel;
+            CreateListBoxItemBasicInfo(file, out item, out panel);
+            TextBlock size = new TextBlock();
+            size.Text = GetBytesReadable(file.Length);
+            panel.Children.Add(size);
+            CheckBox checkBox = new CheckBox();
+            panel.Children.Add(checkBox);
+            size.Width = 100;
+            listBox.Items.Add(item);
+        }
+
+        private void CreateListBoxItem(DirectoryInfo directory)
+        {
+            ListBoxItem item;
+            StackPanel panel;
+            CreateListBoxItemBasicInfo(directory, out item, out panel);
+            listBox.Items.Add(item);
+        }
+
+        private void CreateListBoxItemBasicInfo(FileSystemInfo fileName, out ListBoxItem item, out StackPanel panel)
+        {
+            item = new ListBoxItem();
+            panel = new StackPanel();
+            item.Content = panel;
             panel.Orientation = Orientation.Horizontal;
-            TextBlock textBlock = new TextBlock();
-            panel.Children.Add(textBlock);
-            textBlock.Text = Path.GetFileName(fileName);
-            textBlock.Width = 300;
-            if (type.Equals("file"))
+            TextBlock name = new TextBlock();
+            panel.Children.Add(name);
+            name.Text = Path.GetFileName(fileName.ToString());
+            name.Width = 300;
+            TextBlock creationDateText = new TextBlock();
+            creationDateText.Text = fileName.CreationTime.ToString("yyyy.MM.dd");
+            creationDateText.Width = 100;
+            panel.Children.Add(creationDateText);
+        }
+
+        private string GetBytesReadable(long i)
+        {
+            // Get absolute value
+            long absolute_i = (i < 0 ? -i : i);
+            string suffix;
+            double readable;
+            if (absolute_i >= 0x1000000000000000) // Exabyte
             {
-                CheckBox checkBox = new CheckBox();
-                panel.Children.Add(checkBox);
+                suffix = "EB";
+                readable = (i >> 50);
+            }
+            else if (absolute_i >= 0x4000000000000) // Petabyte
+            {
+                suffix = "PB";
+                readable = (i >> 40);
+            }
+            else if (absolute_i >= 0x10000000000) // Terabyte
+            {
+                suffix = "TB";
+                readable = (i >> 30);
+            }
+            else if (absolute_i >= 0x40000000) // Gigabyte
+            {
+                suffix = "GB";
+                readable = (i >> 20);
+            }
+            else if (absolute_i >= 0x100000) // Megabyte
+            {
+                suffix = "MB";
+                readable = (i >> 10);
+            }
+            else if (absolute_i >= 0x400) // Kilobyte
+            {
+                suffix = "KB";
+                readable = i;
+            }
+            else
+            {
+                return i.ToString("0 B"); // Byte
             }
 
-            listBox.Items.Add(itm);
+            readable = (readable / 1024);
+            return readable.ToString("0.### ") + suffix;
         }
     }
 }

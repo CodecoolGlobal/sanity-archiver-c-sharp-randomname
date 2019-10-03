@@ -6,22 +6,47 @@
         xmlns:local="clr-namespace:SanityArchiver.DesktopUI"
         mc:Ignorable="d"
         Title="Sanity Archiver" Height="450" Width="800" Loaded="Window_Loaded">
+
     <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="20*"/>
+        </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
+        <TreeView x:Name="FoldersItem"
+                  SelectedItemChanged="FoldersItem_SelectedItemChanged"
+                  Width="Auto" 
+                  Background="#FFFFFFFF" 
+                  BorderBrush="#FFFFFFFF" 
+                  Foreground="#FFFFFFFF" 
+                  Grid.ColumnSpan="1" 
+                  Grid.Row="1">
+        </TreeView>
+        
+        <ListBox x:Name="listBox"  Grid.Column="1" Grid.Row="1" Background="#D7D7D7"/>
 
-            <TreeView x:Name="FoldersItem"
-                      SelectedItemChanged="FoldersItem_SelectedItemChanged"
-                      Width="Auto"
-                      Background="#FFFFFFFF"
-                      BorderBrush="#FFFFFFFF"
-                      Foreground="#FFFFFFFF"
-                      Grid.ColumnSpan="1">
-            </TreeView>
-        <ListBox x:Name="listBox"  Grid.Column="1" />
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" />
+        <Menu DockPanel.Dock="Top" Grid.ColumnSpan="2">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Encrypt"/>
+                <MenuItem Header="_Open"/>
+                <MenuItem Header="_Copy/move"/>
+                <MenuItem Header="_Paste"/>
+            </MenuItem>
+        </Menu>
+        <StackPanel Grid.ColumnSpan="2"></StackPanel>
 
     </Grid>
+
+
+   
+    
+    
+    
 </Window>
