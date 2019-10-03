@@ -110,8 +110,11 @@
                     TextBlock textBlock = new TextBlock();
                     textBlock.Text = fileName.Name;
                     textBlock.Width = 300;
+                    TextBlock creationDateText = new TextBlock();
+                    creationDateText.Text = fileName.CreationTime.ToString("yyyy.MM.dd");
                     CheckBox checkBox = new CheckBox();
                     panel.Children.Add(textBlock);
+                    panel.Children.Add(creationDateText);
                     panel.Children.Add(checkBox);
                     itm.Content = panel;
                     listBox.Items.Add(itm);
