@@ -109,17 +109,67 @@
                     panel.Orientation = Orientation.Horizontal;
                     TextBlock textBlock = new TextBlock();
                     textBlock.Text = fileName.Name;
-                    textBlock.Width = 300;
+                    textBlock.Width = 200;
                     TextBlock creationDateText = new TextBlock();
                     creationDateText.Text = fileName.CreationTime.ToString("yyyy.MM.dd");
+                    creationDateText.Width = 100;
+                    TextBlock size = new TextBlock();
+                    size.Text = GetBytesReadable(fileName.Length);
+                    size.Width = 100;
                     CheckBox checkBox = new CheckBox();
                     panel.Children.Add(textBlock);
                     panel.Children.Add(creationDateText);
+                    panel.Children.Add(size);
                     panel.Children.Add(checkBox);
                     itm.Content = panel;
                     listBox.Items.Add(itm);
                 }
             }
+        }
+
+        private string GetBytesReadable(long i)
+        {
+            // Get absolute value
+            long absolute_i = (i < 0 ? -i : i);
+            string suffix;
+            double readable;
+            if (absolute_i >= 0x1000000000000000) // Exabyte
+            {
+                suffix = "EB";
+                readable = (i >> 50);
+            }
+            else if (absolute_i >= 0x4000000000000) // Petabyte
+            {
+                suffix = "PB";
+                readable = (i >> 40);
+            }
+            else if (absolute_i >= 0x10000000000) // Terabyte
+            {
+                suffix = "TB";
+                readable = (i >> 30);
+            }
+            else if (absolute_i >= 0x40000000) // Gigabyte
+            {
+                suffix = "GB";
+                readable = (i >> 20);
+            }
+            else if (absolute_i >= 0x100000) // Megabyte
+            {
+                suffix = "MB";
+                readable = (i >> 10);
+            }
+            else if (absolute_i >= 0x400) // Kilobyte
+            {
+                suffix = "KB";
+                readable = i;
+            }
+            else
+            {
+                return i.ToString("0 B"); // Byte
+            }
+
+            readable = (readable / 1024);
+            return readable.ToString("0.### ") + suffix;
         }
     }
 }
