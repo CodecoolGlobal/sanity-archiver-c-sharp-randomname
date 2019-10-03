@@ -10,7 +10,7 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-        private object _dummyNode = null;
+        private readonly object _dummyNode = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -25,11 +25,16 @@
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            foreach (string s in Directory.GetLogicalDrives())
+            LoadDrives();
+        }
+
+        private void LoadDrives()
+        {
+            foreach (string driveName in Directory.GetLogicalDrives())
             {
                 TreeViewItem item = new TreeViewItem();
-                item.Header = s;
-                item.Tag = s;
+                item.Header = driveName;
+                item.Tag = driveName;
                 item.FontWeight = FontWeights.Normal;
                 item.Items.Add(_dummyNode);
                 item.Expanded += new RoutedEventHandler(Folder_Expanded);
@@ -45,11 +50,11 @@
                 item.Items.Clear();
                 try
                 {
-                    foreach (string s in Directory.GetDirectories(item.Tag.ToString()))
+                    foreach (string directoryName in Directory.GetDirectories(item.Tag.ToString()))
                     {
                         TreeViewItem subitem = new TreeViewItem();
-                        subitem.Header = s.Substring(s.LastIndexOf("\\") + 1);
-                        subitem.Tag = s;
+                        subitem.Header = directoryName.Substring(directoryName.LastIndexOf("\\") + 1);
+                        subitem.Tag = directoryName;
                         subitem.FontWeight = FontWeights.Normal;
                         subitem.Items.Add(_dummyNode);
                         subitem.Expanded += new RoutedEventHandler(Folder_Expanded);
@@ -73,11 +78,10 @@
             }
 
             SelectedImagePath = string.Empty;
-            string temp1 = string.Empty;
             string temp2 = string.Empty;
             while (true)
             {
-                temp1 = temp.Header.ToString();
+                string temp1 = temp.Header.ToString();
                 if (temp1.Contains(@"\"))
                 {
                     temp2 = string.Empty;
