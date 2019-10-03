@@ -1,10 +1,14 @@
 ﻿namespace SanityArchiver.DesktopUI.Views
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Drawing;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -101,6 +105,11 @@
                 temp2 = @"\";
             }
 
+            LoadListBox();
+        }
+
+        private void LoadListBox()
+        {
             listBox.Items.Clear();
             GetDirectories();
             GetFiles();
@@ -143,6 +152,13 @@
             CheckBox checkBox = new CheckBox();
             panel.Children.Add(checkBox);
             size.Width = 100;
+            panel.MouseDown += (s, e) =>
+            {
+                if (e.ClickCount == 2)
+                {
+                    Process.Start(file.FullName);
+                }
+            };
             listBox.Items.Add(item);
         }
 
@@ -151,6 +167,14 @@
             ListBoxItem item;
             StackPanel panel;
             CreateListBoxItemBasicInfo(directory, out item, out panel);
+            panel.MouseDown += (s, e) =>
+            {
+                if (e.ClickCount == 2)
+                {
+                    SelectedItemPath = directory.FullName;
+                    LoadListBox();
+                }
+            };
             listBox.Items.Add(item);
         }
 
@@ -160,6 +184,28 @@
             panel = new StackPanel();
             item.Content = panel;
             panel.Orientation = Orientation.Horizontal;
+            System.Windows.Controls.Image icon = new System.Windows.Controls.Image();
+            icon.Height = panel.Height;
+            if (fileName.GetType() == typeof(FileInfo))
+            {
+                Icon sysicon = System.Drawing.Icon.ExtractAssociatedIcon(fileName.FullName.ToString());
+                BitmapSource imageSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                            sysicon.Handle,
+                            Int32Rect.Empty,
+                            BitmapSizeOptions.FromEmptyOptions());
+                sysicon.Dispose();
+                icon.Source = imageSource;
+            }
+
+            if (fileName.GetType() == typeof(DirectoryInfo))
+            {
+                ImageSource imageSource = new BitmapImage(new Uri(@"C:\Codecool\dotnet\week2_TW\sanity-archiver-c-sharp-randomname\mappakep.png"));
+                icon.Source = imageSource;
+            }
+
+            icon.Height = 17;
+            icon.Width = 17;
+            panel.Children.Add(icon);
             TextBlock name = new TextBlock();
             panel.Children.Add(name);
             name.Text = Path.GetFileName(fileName.ToString());
