@@ -102,6 +102,11 @@
                 temp2 = @"\";
             }
 
+            LoadListBox();
+        }
+
+        private void LoadListBox()
+        {
             listBox.Items.Clear();
             GetDirectories();
             GetFiles();
@@ -159,6 +164,14 @@
             ListBoxItem item;
             StackPanel panel;
             CreateListBoxItemBasicInfo(directory, out item, out panel);
+            panel.MouseDown += (s, e) =>
+            {
+                if (e.ClickCount == 2)
+                {
+                    SelectedItemPath = directory.FullName;
+                    LoadListBox();
+                }
+            };
             listBox.Items.Add(item);
         }
 
