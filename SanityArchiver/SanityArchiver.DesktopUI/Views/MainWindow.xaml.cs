@@ -19,10 +19,10 @@
         public MainWindow()
         {
             InitializeComponent();
-            SelectedImagePath = string.Empty;
+            SelectedItemPath = string.Empty;
         }
 
-        private string SelectedImagePath { get; set; }
+        private string SelectedItemPath { get; set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -76,7 +76,7 @@
                 return;
             }
 
-            SelectedImagePath = string.Empty;
+            SelectedItemPath = string.Empty;
             string temp1 = string.Empty;
             string temp2 = string.Empty;
             while (true)
@@ -87,7 +87,7 @@
                     temp2 = string.Empty;
                 }
 
-                SelectedImagePath = (temp1 + temp2 + SelectedImagePath).ToString();
+                SelectedItemPath = (temp1 + temp2 + SelectedItemPath).ToString();
                 if (temp.Parent.GetType().Equals(typeof(TreeView)))
                 {
                     break;
@@ -98,22 +98,24 @@
             }
 
             listBox.Items.Clear();
-
-            var fileEntries = Directory.GetFileSystemEntries(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly)
-                .Where(f => !new FileInfo(f).Attributes.HasFlag(FileAttributes.Hidden | FileAttributes.System));
-            foreach (var fileName in fileEntries)
+            DirectoryInfo directoryInfo = new DirectoryInfo(SelectedItemPath);
+            FileInfo[] fileEntries = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly);
+            foreach (FileInfo fileName in fileEntries)
             {
-                ListBoxItem itm = new ListBoxItem();
-                StackPanel panel = new StackPanel();
-                panel.Orientation = Orientation.Horizontal;
-                TextBlock textBlock = new TextBlock();
-                textBlock.Text = Path.GetFileName(fileName);
-                textBlock.Width = 300;
-                CheckBox checkBox = new CheckBox();
-                panel.Children.Add(textBlock);
-                panel.Children.Add(checkBox);
-                itm.Content = panel;
-                listBox.Items.Add(itm);
+                if (!fileName.Attributes.HasFlag(FileAttributes.Hidden) || !fileName.Attributes.HasFlag(FileAttributes.System))
+                {
+                    ListBoxItem itm = new ListBoxItem();
+                    StackPanel panel = new StackPanel();
+                    panel.Orientation = Orientation.Horizontal;
+                    TextBlock textBlock = new TextBlock();
+                    textBlock.Text = fileName.Name;
+                    textBlock.Width = 300;
+                    CheckBox checkBox = new CheckBox();
+                    panel.Children.Add(textBlock);
+                    panel.Children.Add(checkBox);
+                    itm.Content = panel;
+                    listBox.Items.Add(itm);
+                }
             }
         }
     }
