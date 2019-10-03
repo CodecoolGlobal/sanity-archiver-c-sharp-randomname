@@ -94,23 +94,50 @@
             }
 
             listBox.Items.Clear();
+            GetDirectories();
+            GetFiles();
+        }
 
-            string[] fileEntries = Directory.GetFileSystemEntries(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly);
+        private string[] GetDirectories()
+        {
+            string[] fileEntries = Directory.GetDirectories(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly);
 
             foreach (string fileName in fileEntries)
             {
-                ListBoxItem itm = new ListBoxItem();
-                StackPanel panel = new StackPanel();
-                panel.Orientation = Orientation.Horizontal;
-                TextBlock textBlock = new TextBlock();
-                textBlock.Text = Path.GetFileName(fileName);
-                textBlock.Width = 300;
-                CheckBox checkBox = new CheckBox();
-                panel.Children.Add(textBlock);
-                panel.Children.Add(checkBox);
-                itm.Content = panel;
-                listBox.Items.Add(itm);
+                CreateListBoxItem(fileName, "dir");
             }
+
+            return fileEntries;
+        }
+
+        private string[] GetFiles()
+        {
+            string[] fileEntries = Directory.GetFiles(SelectedImagePath, "*.*", SearchOption.TopDirectoryOnly);
+            foreach (string fileName in fileEntries)
+            {
+                CreateListBoxItem(fileName, "file");
+            }
+
+            return fileEntries;
+        }
+
+        private void CreateListBoxItem(string fileName, string type)
+        {
+            ListBoxItem itm = new ListBoxItem();
+            StackPanel panel = new StackPanel();
+            itm.Content = panel;
+            panel.Orientation = Orientation.Horizontal;
+            TextBlock textBlock = new TextBlock();
+            panel.Children.Add(textBlock);
+            textBlock.Text = Path.GetFileName(fileName);
+            textBlock.Width = 300;
+            if (type.Equals("file"))
+            {
+                CheckBox checkBox = new CheckBox();
+                panel.Children.Add(checkBox);
+            }
+
+            listBox.Items.Add(itm);
         }
     }
 }
