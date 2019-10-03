@@ -1,6 +1,7 @@
 ﻿namespace SanityArchiver.DesktopUI.Views
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Windows;
@@ -143,6 +144,13 @@
             CheckBox checkBox = new CheckBox();
             panel.Children.Add(checkBox);
             size.Width = 100;
+            panel.MouseDown += (s, e) =>
+            {
+                if (e.ClickCount == 2)
+                {
+                    Process.Start(file.FullName);
+                }
+            };
             listBox.Items.Add(item);
         }
 
