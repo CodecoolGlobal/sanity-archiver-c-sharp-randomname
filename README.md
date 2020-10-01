@@ -2,9 +2,10 @@
 2nd TW week project in .NET basics module
 
 ## Description
-As a User I would like to have an application in order to archive and handle my files.
-### What I need:
-* I would like to browse my files on drive
+In this WPF app you are able to handle your files.
+
+### Available features:
+* browse your files on drive
 * I would like to compress a selected file
 * I would like to crypt a selected file
 * I would like to change the file attributes in a dialog
